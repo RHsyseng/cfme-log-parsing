@@ -84,7 +84,7 @@ def stats (workers, options)
         perf_capture_timings = eval(perf_process[:capture_timings]) if @timings_re.match(perf_process[:capture_timings])
         unless perf_capture_timings.nil?
           if (perf_capture_timings.keys & (unique_storage_capture_counters + unique_process_counters + other_counters)).any?
-            o.puts "*** Debug - BZ1424716 ***"
+            # o.puts "*** Debug - BZ1424716 ***"
             perf_capture_counters = unique_perf_capture_counters + [:total_time, :capture_state]
             perf_capture_timings.delete_if { |key, _| !perf_capture_counters.include?(key) }
               put_timings(o, delta_timings(perf_capture_timings,last_timings))
@@ -98,7 +98,7 @@ def stats (workers, options)
         storage_capture_timings = eval(perf_process[:capture_timings]) if @timings_re.match(perf_process[:capture_timings])
         unless storage_capture_timings.nil?
           if (storage_capture_timings.keys & (unique_perf_capture_counters + unique_process_counters + other_counters)).any?
-            o.puts "*** Debug - BZ1424716 ***"
+            # o.puts "*** Debug - BZ1424716 ***"
             # Need to delete the erroneous counters then subtract previous counters from the remainder (https://bugzilla.redhat.com/show_bug.cgi?id=1424716)
             storage_capture_counters = unique_storage_capture_counters + [:total_time, :process_perfs, :db_find_prev_perfs, :process_perfs_tag, :capture_state]
             storage_capture_timings.delete_if { |key, _| !storage_capture_counters.include?(key) }
@@ -123,7 +123,7 @@ def stats (workers, options)
         process_timings = eval(perf_process[:process_timings]) if @timings_re.match(perf_process[:process_timings])
         unless process_timings.nil?
           if (process_timings.keys & (unique_perf_capture_counters + unique_storage_capture_counters + other_counters)).any?
-            o.puts "*** Debug - BZ1424716 ***"
+            # o.puts "*** Debug - BZ1424716 ***"
             # Need to delete the erroneous counters then subtract previous counters from the remainder (https://bugzilla.redhat.com/show_bug.cgi?id=1424716)
             process_counters = unique_process_counters + [:total_time, :process_perfs, :process_perfs_tag, :db_find_prev_perfs]
             process_timings.delete_if { |key, _| !process_counters.include?(key) }

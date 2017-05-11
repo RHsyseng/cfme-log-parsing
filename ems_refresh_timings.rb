@@ -73,7 +73,7 @@ def stats (workers, options)
       timings = eval(refresh[:timings]) if @timings_re.match(refresh[:timings])
       unless timings.nil?
         if (timings.keys & (non_refresh_counters)).any?
-          o.puts "*** Debug - BZ1424716 ***"
+          # o.puts "*** Debug - BZ1424716 ***"
           # Need to delete the erroneous counters then subtract previous counters from the remainder (https://bugzilla.redhat.com/show_bug.cgi?id=1424716)
           timings.delete_if { |key, _| !refresh_counters.include?(key) }
           put_timings(o, delta_timings(timings,last_timings))

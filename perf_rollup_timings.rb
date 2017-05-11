@@ -84,7 +84,7 @@ def stats (workers, options)
       rollup_timings = eval(rollup[:timings]) if @timings_re.match(rollup[:timings])
       unless rollup_timings.nil?
         if (rollup_timings.keys & (non_rollup_counters)).any?
-          o.puts "*** Debug - BZ1424716 ***"
+          # o.puts "*** Debug - BZ1424716 ***"
           # Need to delete the erroneous counters then subtract previous counters from the remainder (https://bugzilla.redhat.com/show_bug.cgi?id=1424716)
           rollup_timings.delete_if { |key, _| !rollup_counters.include?(key) }
           put_timings(o, delta_timings(rollup_timings,last_timings))
