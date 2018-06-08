@@ -93,11 +93,14 @@ def stats (workers, options)
 end
 
 # [----] I, [2017-02-24T05:28:23.216307 #40450:85113c]  INFO -- : MIQ(ManageIQ::Providers::Openstack::NetworkManager::MetricsCollectorWorker::Runner#get_message_via_drb) Message id: [119351], MiqWorker id: [7821], Zone: [default], Role: [ems_metrics_collector], Server: [], Ident: [openstack_network], Target id: [], Instance id: [209], Task id: [], Command: [ManageIQ::Providers::Openstack::CloudManager::Vm.perf_capture_realtime], Timeout: [600], Priority: [100], State: [dequeue], Deliver On: [], Data: [], Args: [], Dequeued in: [127.147928764] seconds
+# CFME 5.9
+# [----] I, [2018-06-08T12:42:31.406174 #43975:12a5110]  INFO -- : MIQ(MiqQueue.get) Message id: [1000027058372], MiqWorker id: [1000000687929], Zone: [Infrastructure], Role: [ems_inventory], Server: [], Ident: [ems_1000000000001], Target id: [], Instance id: [], Task id: [], Command: [EmsRefresh.refresh], Timeout: [7200], Priority: [100], State: [dequeue], Deliver On: [], Data: [1 bytes], Args: [], Dequeued in: [4.599431681] seconds
+
 
 get_message_via_drb_re = %r{
                           ----\]\ I,\ \[(?<timestamp>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{6})
                           \ \#(?<pid>\h+):\h+\]
-                          \ .*get_message_via_drb\)
+                          \ .*get.*\)
                           \ Message\ id:\ \[(?<message_id>\d+)\],
                           \ MiqWorker\ id:\ \[(?<worker_id>\h*)\],
                           \ Zone:\ \[(?<zone>.*)\],
