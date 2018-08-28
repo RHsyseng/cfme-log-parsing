@@ -16,12 +16,12 @@ def put_timings(o, timings)
   unless timings.nil?
     timings.keys.each do |metric|
       next if /total_time/.match(metric)
-      format = /^num_.*/.match(metric) ? "%-36s %5.6f" : "%-36s %5.6f seconds"
+      format = /^num_.*/.match(metric) ? "%-38s %5.6f" : "%-38s %5.6f seconds"
       o.puts "  #{sprintf(format, "#{metric}:", timings[metric])}" unless timings[metric].zero?
     end
     # print total_time last in each section
     if timings.has_key?(:total_time)
-      o.puts "  #{sprintf("%-36s %5.6f seconds", "total_time:", timings[:total_time])}" unless timings[:total_time].zero?
+      o.puts "  #{sprintf("%-38s %5.6f seconds", "total_time:", timings[:total_time])}" unless timings[:total_time].zero?
     end
   end
 end
@@ -197,6 +197,8 @@ storage_capture_start_re = %r{
 # [----] I, [2017-01-25T03:22:25.940788 #305:66b14c]  INFO -- : MIQ(ManageIQ::Providers::Vmware::InfraManager::Vm#perf_capture) [realtime] Capture for ManageIQ::Providers::Vmware::InfraManager::Vm name: [VERD452], id: [1000000000475]...Complete - Timings: {:capture_state=>0.01109933853149414, :vim_connect=>0.043763160705566406, :capture_intervals=>0.06079673767089844, :capture_counters=>0.05180954933166504, :build_query_params=>0.0002880096435546875, :num_vim_queries=>1, :vim_execute_time=>0.10877013206481934, :perf_processing=>0.02622389793395996, :num_vim_trips=>1, :total_time=>0.3047974109649658}
 # CFME 5.8
 # [----] I, [2017-04-25T11:00:23.428229 #26762:106312c]  INFO -- : MIQ(ManageIQ::Providers::Redhat::InfraManager::Vm#perf_capture) [realtime] Capture for ManageIQ::Providers::Redhat::InfraManager::Vm name: [jst-web01], id: [15], start_time: [2017-04-25 00:00:00 UTC]...Complete - Timings: {:capture_state=>0.07574152946472168, :rhevm_connect=>0.01647043228149414, :collect_data=>0.724677324295044, :total_time=>0.8183016777038574}
+# CFME 5.9
+# [----] I, [2018-08-28T10:36:41.599539 #1972:ee3108]  INFO -- : MIQ(ManageIQ::Providers::Redhat::InfraManager::Vm#just_perf_capture) [realtime] Capture for ManageIQ::Providers::Redhat::InfraManager::Vm name: [cloudforms02.bit63.net], id: [3], start_time: [2018-08-28 09:36:40 UTC]...Complete - Timings: {:capture_state=>0.004627227783203125, :rhevm_connect=>0.008817195892333984, :collect_data=>0.055338144302368164, :total_time=>0.07842731475830078}
 
 perf_capture_complete_re = %r{
                           ----\]\ I,\ \[(?<timestamp>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{6})
@@ -208,17 +210,21 @@ perf_capture_complete_re = %r{
                             }x
 
 # [----] I, [2017-01-28T03:09:11.370442 #19020:66b14c]  INFO -- : MIQ(ManageIQ::Providers::Vmware::InfraManager::Vm#perf_capture) [realtime] Skipping processing for ManageIQ::Providers::Vmware::InfraManager::Vm name: [VERD377], id: [1000000000698] as no metrics were captured.
+# CFME 5.9
+# [----] I, [2018-08-28T10:36:41.599886 #1972:ee3108]  INFO -- : MIQ(ManageIQ::Providers::Redhat::InfraManager::Vm#just_perf_capture) [realtime] Skipping processing for ManageIQ::Providers::Redhat::InfraManager::Vm name: [cloudforms02.bit63.net], id: [3], start_time: [2018-08-28 09:36:40 UTC] as no metrics were captured.
 
 perf_process_skipped_re = %r{
                           ----\]\ I,\ \[(?<timestamp>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{6})
                             \ \#(?<pid>\h+):\h+\]
                             \ .*perf_capture\)\ \[realtime\]\ Skipping\ processing\ for\ ManageIQ::Providers::(?<provider>.+)::(?<object>.+)
                             \ name:\ \[(?<obj_name>.+?)\],
-                            \ id:\ \[(?<obj_id>\d+)\]
+                            \ id:\ \[(?<obj_id>\d+)\](:?.*)
                             \ as\ no\ metrics\ were\ captured\.$
                             }x
 
 # [----] I, [2017-01-30T01:02:20.773472 #3200:66b14c]  INFO -- : MIQ(Storage#perf_capture) [hourly] Capture for Storage name: [DAS2], id: [1000000000114]...Complete - Timings: {:server_dequeue=>0.003245830535888672, :capture_state=>22.106929302215576, :vim_connect=>44.42920637130737, :capture_intervals=>9.269381284713745, :capture_counters=>82.31622457504272, :build_query_params=>0.3026297092437744, :num_vim_queries=>1, :vim_execute_time=>155.0877604484558, :perf_processing=>31.102522373199463, :num_vim_trips=>1, :total_time=>1173.6877822875977, :process_counter_values=>21.14705777168274, :db_find_prev_perfs=>5.793952941894531, :process_perfs=>126.75096321105957, :process_perfs_db=>587.8275690078735, :db_find_storage_files=>2.852144718170166, :init_attrs=>4.23950457572937, :process_perfs_tag=>2.8116538524627686, :process_bottleneck=>31.69999098777771}
+# CFME 5.9
+# [----] I, [2018-08-28T11:00:57.823453 #2008:ee3108]  INFO -- : MIQ(Storage#perf_capture) [hourly] Capture for Storage name: [ISOs], id: [2]...Complete - Timings: {:db_find_storage_files=>0.00671076774597168, :capture_state=>0.056298017501831055, :init_attrs=>0.012256145477294922, :db_find_prev_perfs=>0.0065648555755615234, :process_perfs=>0.022905826568603516, :process_bottleneck=>0.86515212059021, :total_time=>1.0197763442993164}
 
 storage_capture_complete_re = %r{
                           ----\]\ I,\ \[(?<timestamp>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{6})
@@ -230,6 +236,8 @@ storage_capture_complete_re = %r{
                             }x
 
 # [----] I, [2017-02-19T14:41:31.584155 #18254:33d13c]  INFO -- : MIQ(ManageIQ::Providers::Redhat::InfraManager::Vm#perf_process) [realtime] Processing for ManageIQ::Providers::Redhat::InfraManager::Vm name: [cloudforms06.bit63.net], id: [4], for range [2017-02-18T03:03:18Z - 2017-02-19T14:42:03Z]...
+# CFME 5.9
+# [----] I, [2018-08-28T12:24:58.352890 #1972:ee3108]  INFO -- : MIQ(ManageIQ::Providers::Redhat::InfraManager::Vm#perf_process) [realtime] Processing for ManageIQ::Providers::Redhat::InfraManager::Vm name: [cloudforms02.bit63.net], id: [3], for range [2018-08-28T10:32:00Z - 2018-08-28T11:24:40Z]...
 
 perf_process_start_re = %r{
                           ----\]\ I,\ \[(?<timestamp>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{6})
@@ -241,6 +249,8 @@ perf_process_start_re = %r{
                             }x
 
 # [----] E, [2017-03-01T07:16:46.753782 #55228:e6d138] ERROR -- : MIQ(ManageIQ::Providers::Openstack::CloudManager::MetricsCapture#perf_collect_metrics) [realtime] for: [ManageIQ::Providers::Openstack::CloudManager::Vm], [234], [n059.eng.bos.redhat.com]   Timings at time of error: {:server_dequeue=>0.0059583187103271484, :capture_state=>0.8445370197296143, :connect=>1111.769113779068, :total_time=>1020.3793663978577}
+# CFME 5.9
+# [----] E, [2018-08-15T08:56:51.775370 #1955:965118] ERROR -- : MIQ(ManageIQ::Providers::Redhat::InfraManager::MetricsCapture#perf_collect_metrics) [realtime] for: [ManageIQ::Providers::Redhat::InfraManager::Vm], [3], [cloudforms02.bit63.net]   Timings at time of error: {:capture_state=>0.004180908203125, :rhevm_connect=>0.005714893341064453}
 
 perf_collect_error_re = %r{
                           ----\]\ E,\ \[(?<timestamp>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{6})
@@ -252,11 +262,13 @@ perf_collect_error_re = %r{
                           }x                          
 
 # [----] I, [2017-01-29T09:54:54.195921 #10702:66b14c]  INFO -- : MIQ(ManageIQ::Providers::Vmware::InfraManager::Vm#perf_process) [realtime] Processing 159 performance rows...Complete - Added 159 / Updated 0
+# CFME 5.9
+# [----] I, [2018-08-28T10:33:56.061338 #1972:ee3108]  INFO -- : MIQ(ActiveMetrics::ConnectionAdapters::MiqPostgresAdapter#write_rows) [realtime] Processing 153 performance rows...Complete - Added 153 / Updated 0
 
 perf_rows_complete_re = %r{
                           ----\]\ I,\ \[(?<timestamp>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{6})
                           \ \#(?<pid>\h+):\h+\]
-                          \ .*perf_process\)\ \[realtime\]\ Processing\ (?<num_rows>\d+)\ performance\ rows\.\.\.Complete
+                          \ .*(perf_process|write_rows)\)\ \[realtime\]\ Processing\ (?<num_rows>\d+)\ performance\ rows\.\.\.Complete
                           \ -\ Added\ (?<num_added>\d+)\ /
                           \ Updated\ (?<num_updated>\d+)
                           }x
@@ -264,6 +276,8 @@ perf_rows_complete_re = %r{
 # [----] I, [2016-12-13T06:45:43.171268 #3104:11e598c]  INFO -- : MIQ(ManageIQ::Providers::Vmware::InfraManager::HostEsx#perf_process) [realtime] Processing for ManageIQ::Providers::Vmware::InfraManager::HostEsx name: [vs3.vi.grp.net], id: [1000000000042], for range [2016-12-13T04:45:40Z - 2016-12-13T05:45:20Z]...Complete - Timings: {:heartbeat=>0.014219522476196289, :server_dequeue=>0.006936788558959961, :capture_state=>8763.291134595871, :vim_connect=>314417.52912831306, :capture_intervals=>193884.57209587097, :capture_counters=>296209.3751807213, :build_query_params=>322.45843839645386, :num_vim_queries=>1, :vim_execute_time=>387732.9721496105, :perf_processing=>19080.591324090958, :num_vim_trips=>1, :total_time=>2013918.6065928936, :process_counter_values=>18276.25559949875, :db_find_prev_perfs=>3039.8460755348206, :process_perfs=>86263.12925457954, :process_perfs_db=>572791.01060009, :db_find_storage_files=>263.6958165168762, :init_attrs=>1335.182659626007, :process_perfs_tag=>3156.6503195762634, :process_bottleneck=>12043.107157468796}
 # Sometimes it's correct, as follows:
 # [----] I, [2017-01-25T03:22:25.569662 #305:66b14c]  INFO -- : MIQ(ManageIQ::Providers::Vmware::InfraManager::Vm#perf_process) [realtime] Processing for ManageIQ::Providers::Vmware::InfraManager::Vm name: [VERD431], id: [1000000000393], for range [2017-01-25T01:31:20Z - 2017-01-25T02:22:20Z]...Complete - Timings: {:process_counter_values=>0.024013280868530273, :db_find_prev_perfs=>0.010066509246826172, :process_perfs=>0.2171170711517334, :process_perfs_db=>3.7727270126342773, :total_time=>4.06266450881958}
+# CFME 5.9
+# [----] I, [2018-08-28T10:33:56.135653 #1972:ee3108]  INFO -- : MIQ(ManageIQ::Providers::Redhat::InfraManager::Host#perf_process) [realtime] Processing for ManageIQ::Providers::Redhat::InfraManager::Host name: [rhelh02.bit63.net], id: [2], for range [2018-08-28T08:43:00Z - 2018-08-28T09:33:40Z]...Complete - Timings: {:process_counter_values=>0.010604381561279297, :db_find_prev_perfs=>0.015491008758544922, :preload_vim_performance_state_for_ts=>0.0041217803955078125, :process_perfs=>0.04413771629333496, :process_build_ics=>0.010332822799682617, :process_perfs_db=>0.20606374740600586, :total_time=>0.36808276176452637}
 
 perf_process_complete_re = %r{
                              ----\]\ I,\ \[(?<timestamp>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{6})
