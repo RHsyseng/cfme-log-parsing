@@ -67,13 +67,13 @@ def stats (workers, options)
       o.puts "Message ID:                    #{perf_process[:message_id]}"
       o.puts "Message fetch time:            #{perf_process[:message_time]}"
       o.puts "Message time in queue:         #{perf_process[:message_dequeue_time]} seconds"
-      o.puts "Provider:                      #{perf_process[:provider]}"
+      o.puts "Provider:                      #{perf_process[:provider]}" unless perf_process[:provider].nil?
       o.puts "Object type:                   #{perf_process[:object]}"
       o.puts "Object name:                   #{perf_process[:obj_name]}"
       o.puts "Metrics processing start time: #{perf_process[:start_time]}"
       o.puts "Time range:                    #{perf_process[:range]}"
-      o.puts "Rows added:                    #{perf_process[:num_added]}"
-      o.puts "Rows updated:                  #{perf_process[:num_updated]}"
+      o.puts "Rows added:                    #{perf_process[:num_added]}" unless perf_process[:num_added].nil?
+      o.puts "Rows updated:                  #{perf_process[:num_updated]}" unless perf_process[:num_updated].nil?
       o.puts "Capture state:                 #{perf_process[:capture_state]}"
       case perf_process[:capture_state]
       when 'capture_started'
