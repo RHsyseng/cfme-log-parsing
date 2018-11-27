@@ -61,12 +61,16 @@ def stats (workers, options)
       o.puts "EMS Name:               #{refresh[:ems_name]}"
       o.puts "Refresh type:           #{refresh[:type]}"
       if refresh[:type] == 'targeted'
-        targets = ""
-        refresh[:targets].keys.each do |target|
-          targets += ", " unless targets == ""
-          targets += "#{target}: #{refresh[:targets][target].length}"
+        if refresh.has_key?(:target_number)
+          o.puts "Number of targets:      #{refresh[:target_number]}"
+        else
+          targets = ""
+          refresh[:targets].keys.each do |target|
+            targets += ", " unless targets == ""
+            targets += "#{target}: #{refresh[:targets][target].length}"
+          end
+          o.puts "Refresh targets:        #{targets}"
         end
-        o.puts "Refresh targets:        #{targets}"
       end
       o.puts "Refresh start time:     #{refresh[:start_time]}"
       o.puts "Refresh timings:"
@@ -123,6 +127,8 @@ get_message_via_drb_re = %r{
 # [----] I, [2017-01-23T11:39:28.842576 #40611:4ad134]  INFO -- : MIQ(ManageIQ::Providers::Amazon::CloudManager::Refresher#refresh) EMS: [ec2], id: [1] Refreshing targets for EMS...
 # CFME 5.8
 # [----] I, [2017-04-25T08:49:41.359916 #26815:106312c]  INFO -- : MIQ(ManageIQ::Providers::Redhat::InfraManager::Refresh::Strategies::Api3#refresh) EMS: [RHEV], id: [1] Refreshing targets for EMS...
+# CFME 5.9
+# [----] I, [2018-11-26T04:36:19.988592 #40732:8dd114]  INFO -- : MIQ(ManageIQ::Providers::Redhat::InfraManager::Refresh::Strategies::Api4#refresh) EMS: [RHV], id: [1] Refreshing targets for EMS...
 
 ems_refresh_start_re = %r{
                           ----\]\ I,\ \[(?<timestamp>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{6})
@@ -139,6 +145,8 @@ ems_refresh_start_re = %r{
 # [----] I, [2017-01-23T10:31:34.701712 #16603:4ad134]  INFO -- : MIQ(ManageIQ::Providers::Amazon::NetworkManager::Refresher#refresh) EMS: [ec2 Network Manager], id: [2]   ManageIQ::Providers::Amazon::NetworkManager [ec2 Network Manager] id [2]
 # CFME 5.8
 # [----] I, [2017-04-25T08:47:04.011432 #26815:106312c]  INFO -- : MIQ(ManageIQ::Providers::Redhat::InfraManager::Refresh::Strategies::Api3#refresh) EMS: [RHEV], id: [1]   ManageIQ::Providers::Redhat::InfraManager [RHEV] id [1]
+# CFME 5.9
+# [----] I, [2018-11-26T04:36:19.988739 #40732:8dd114]  INFO -- : MIQ(ManageIQ::Providers::Redhat::InfraManager::Refresh::Strategies::Api4#refresh) EMS: [RHV], id: [1G]   ManageIQ::Providers::Redhat::InfraManager [RHV] id [1000000000002]
 
 ems_refresh_full_re = %r{
                          ----\]\ I,\ \[(?<timestamp>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{6})
@@ -154,14 +162,17 @@ ems_refresh_full_re = %r{
 # [----] I, [2017-02-17T09:42:00.540557 #29182:49514c]  INFO -- : MIQ(ManageIQ::Providers::Redhat::InfraManager::Refresher#refresh) EMS: [RHEV], id: [1]   ManageIQ::Providers::Redhat::InfraManager::Vm [jst-db01] id [10]
 # CFME 5.8
 # [----] I, [2017-04-25T10:22:20.586073 #26815:106312c]  INFO -- : MIQ(ManageIQ::Providers::Redhat::InfraManager::Refresh::Strategies::Api3#refresh) EMS: [RHEV], id: [1]   ManageIQ::Providers::Redhat::InfraManager::Vm [jst-mid01] id [14]
+# CFME 5.9
+# [----] I, [2018-11-26T09:57:08.259797 #15498:bd7108]  INFO -- : MIQ(ManageIQ::Providers::Redhat::InfraManager::Refresh::Strategies::Api4#refresh_targets_for_ems) EMS: [RHV], id: [1] Refreshing target ManagerRefresh::TargetCollection [Collection of 10 targets]
 
 ems_refresh_targeted_re = %r{
                           ----\]\ I,\ \[(?<timestamp>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{6})
                             \ \#(?<pid>\h+):\h+\]
-                            \ .*MIQ\(ManageIQ::Providers::(?<provider>.+)::Refresh(?:.+)\#refresh\)
+                            \ .*MIQ\(ManageIQ::Providers::(?<provider>.+)::Refresh(?:.+)\#refresh.*\)
                             \ EMS:\ \[(?<ems_name>.+)\],
                             \ id:\ \[(?<ems_id>\d+)\]
-                            \s+ManageIQ::Providers::.*Manager::(?<target_type>\w+)\ \[(?<target_name>.+?)\](:?\.\.\.)*$
+                            (?:\s+ManageIQ::Providers::.*Manager::(?<target_type>\w+)\ \[(?<target_name>.+?)\](:?\.\.\.)*|
+                            \ Refreshing\ target\ ManagerRefresh::TargetCollection\ \[Collection\ of\ (?<target_number>\d+)\ targets\])
                             }x
 
 # [----] I, [2017-01-23T11:40:07.609550 #40611:4ad134]  INFO -- : MIQ(ManageIQ::Providers::Amazon::CloudManager::Refresher#refresh) EMS: [ec2], id: [1] Refreshing targets for EMS...Complete - Timings {:server_dequeue=>0.0038323402404785156, :collect_inventory_for_targets=>5.0067901611328125e-06, :parse_legacy_inventory=>18.24713921546936, :parse_targeted_inventory=>18.247156858444214, :save_inventory=>20.513510942459106, :ems_refresh=>38.76088333129883}
@@ -297,6 +308,7 @@ begin
     if targeted
       current = workers[targeted[:pid]].length - 1 rescue next
       workers[targeted[:pid]][current][:type]    = 'targeted' unless workers[targeted[:pid]][current].has_key?(:type)
+      workers[targeted[:pid]][current][:target_number] = targeted[:target_number] unless targeted[:target_number].nil?
       workers[targeted[:pid]][current][:targets] = {} unless workers[targeted[:pid]][current].has_key?(:targets)
       workers[targeted[:pid]][current][:targets][targeted[:target_type]] = [] unless workers[targeted[:pid]][current][:targets][targeted[:target_type]].class.to_s == "Array"
       workers[targeted[:pid]][current][:targets][targeted[:target_type]] << targeted[:target_name]
