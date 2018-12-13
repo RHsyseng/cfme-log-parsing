@@ -164,6 +164,8 @@ ems_refresh_full_re = %r{
 # [----] I, [2017-04-25T10:22:20.586073 #26815:106312c]  INFO -- : MIQ(ManageIQ::Providers::Redhat::InfraManager::Refresh::Strategies::Api3#refresh) EMS: [RHEV], id: [1]   ManageIQ::Providers::Redhat::InfraManager::Vm [jst-mid01] id [14]
 # CFME 5.9
 # [----] I, [2018-11-26T09:57:08.259797 #15498:bd7108]  INFO -- : MIQ(ManageIQ::Providers::Redhat::InfraManager::Refresh::Strategies::Api4#refresh_targets_for_ems) EMS: [RHV], id: [1] Refreshing target ManagerRefresh::TargetCollection [Collection of 10 targets]
+# CFME 5.10
+# [----] I, [2018-11-28T14:03:14.013600 #417:356f88]  INFO -- : MIQ(ManageIQ::Providers::Redhat::InfraManager::Refresh::Strategies::Api4#refresh_targets_for_ems) EMS: [RHV], id: [1] Refreshing target InventoryRefresh::TargetCollection [Collection of 11 targets]
 
 ems_refresh_targeted_re = %r{
                           ----\]\ I,\ \[(?<timestamp>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{6})
@@ -172,7 +174,7 @@ ems_refresh_targeted_re = %r{
                             \ EMS:\ \[(?<ems_name>.+)\],
                             \ id:\ \[(?<ems_id>\d+)\]
                             (?:\s+ManageIQ::Providers::.*Manager::(?<target_type>\w+)\ \[(?<target_name>.+?)\](:?\.\.\.)*|
-                            \ Refreshing\ target\ ManagerRefresh::TargetCollection\ \[Collection\ of\ (?<target_number>\d+)\ targets\])
+                            \ Refreshing\ target\ .*Refresh::TargetCollection\ \[Collection\ of\ (?<target_number>\d+)\ targets\])
                             }x
 
 # [----] I, [2017-01-23T11:40:07.609550 #40611:4ad134]  INFO -- : MIQ(ManageIQ::Providers::Amazon::CloudManager::Refresher#refresh) EMS: [ec2], id: [1] Refreshing targets for EMS...Complete - Timings {:server_dequeue=>0.0038323402404785156, :collect_inventory_for_targets=>5.0067901611328125e-06, :parse_legacy_inventory=>18.24713921546936, :parse_targeted_inventory=>18.247156858444214, :save_inventory=>20.513510942459106, :ems_refresh=>38.76088333129883}
